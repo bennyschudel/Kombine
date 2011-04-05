@@ -62,7 +62,7 @@ Optimize
 -
 Before using the generated images in production I suggest an optimization tool like [optipng][1] or [jpegoptim][2].
 
-[1]: http://www.ubuntu.org                  "Linux based OS"
+[1]: http://www.ubuntu.com                  "Linux based OS"
 [2]: http://www.php.net                     "PHP"
 [3]: http://www.imagemagick.org             "ImageMagick"
 
