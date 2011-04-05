@@ -1,6 +1,5 @@
 Kombine
 =
-
 This is a command line PHP Script that takes a folder of images (all ImageMagick supported file formats) and combines
 them into a single file (or multiples files if you wish ;). It also creates a CSS file for you - ready to go.
 
@@ -53,12 +52,21 @@ Options
     *) ? = total provided images
 </pre>
 
+Requirements
+-
++ [Linux based OS][1]
++ [PHP][2]
++ [ImageMagick][3]
 
 Optimize
 -
-Before using the generated images in production I suggest to optimization tool like [optipng][1] oder [jpegoptim][2].
+Before using the generated images in production I suggest an optimization tool like [optipng][1] or [jpegoptim][2].
 
-[1]: http://optipng.sourceforge.net/        "optipng"
-[2]: https://github.com/glennr/jpegoptim    "jpegoptim"
+[1]: http://www.ubuntu.org                  "Linux based OS"
+[2]: http://www.php.net                     "PHP"
+[3]: http://www.imagemagick.org             "ImageMagick"
+
+[4]: http://optipng.sourceforge.net         "optipng"
+[5]: https://github.com/glennr/jpegoptim    "jpegoptim"
 
 
