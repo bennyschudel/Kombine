@@ -20,18 +20,18 @@ Usage
       with *thumb* as class name in the css.
 
     
-    php kombine.php --sizes=30x20,60x40 --dimensions=8 --class-name=thumb --format=jpg
+    php kombine.php --sizes=30x20,60x40 --dimensions=8 --format=jpg --class-name=thumb
 
-    php kombine.php -s30x20,60x40 -d8 -cthumb -fjpg
+    php kombine.php -s30x20,60x40 -d8 -fjpg -cthumb
 
     » This will create *30x20px* and *60x40px* versions of the images combined into a *single image* with *8 columns*, 
       *JPG* format and *thumb* as class name in the css.
 
 
-    php kombine.php --sizes=30x20 --class-name=thumb --dimensions=8x2 --format=png --images-dir=styles/thumbs \
+    php kombine.php --sizes=30x20 --dimensions=8x2 --format=png --class-name=thumb --images-dir=styles/thumbs \
                     --styles-dir=styles
 
-    php kombine.php -s30x20 -d8x2 -cthumb -fpng -istyles/thumbs -ystyles
+    php kombine.php -s30x20 -d8x2 -fpng -cthumb -istyles/thumbs -ystyles
 
     » This will create *30x20px* version of the images combined splitted into *multiple images* with *8 columns* 
       and *2 rows*, *PNG* format and *thumb* as class name in the css. The final images will be located in the 
