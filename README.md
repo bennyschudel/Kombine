@@ -4,7 +4,7 @@ Kombine
 This is a commandline PHP Script that takes a folder of images (all ImageMagick supported file formats) and combines
 them into a single file (or multiples files if you wish ;). It also creates a CSS file for you - ready to go.
 
-If you have any questions feel free to contact me anytime.
+If you have any questions feel free to contact me.  
 // Benny
 
 Usage
@@ -28,13 +28,14 @@ Usage
       *JPG* format and *thumb* as class name in the css.
 
 
-    php kombine.php --sizes=30x20 --class-name=thumb --dimensions=8x2 --format=png --images-dir=styles/thumbs --styles-dir=styles
+    php kombine.php --sizes=30x20 --class-name=thumb --dimensions=8x2 --format=png --images-dir=styles/thumbs \
+                    --styles-dir=styles
 
     php kombine.php -s30x20 -d8x2 -cthumb -fpng -istyles/thumbs -ystyles
 
-    » This will create *30x20px* version of the images combined splitted into *multiple images* with *8 columns* and *2 rows*, 
-      *PNG* format and *thumb* as class name in the css. The final images will be located in the *styles/thumbs* folder 
-      and the css in the *styles* folder.
+    » This will create *30x20px* version of the images combined splitted into *multiple images* with *8 columns* 
+      and *2 rows*, *PNG* format and *thumb* as class name in the css. The final images will be located in the 
+      *styles/thumbs* folder and the css in the *styles* folder.
 </pre>
 
 Options
