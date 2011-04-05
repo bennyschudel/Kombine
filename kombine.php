@@ -3,8 +3,8 @@
 /**
  * This PHP script create sprites and css of given images
  * 
- * usage: php kombine.php -s16,32,64 -d8x1 -cflag
- *        php kombine.php --sizes=16x16,32x32,64x64 --dimensions=8x1 --class-name=flag
+ * usage: php kombine.php -s16,32,64 -d8x2 -cthumb
+ *        php kombine.php --sizes=16x16,32x32,64x64 --dimensions=8x2 --class-name=thumb
  * 
  * author: Benjamin Schudel <benjamin.schudel at gmail>
  * date: 20011-04-05
@@ -18,9 +18,8 @@ $class_name		= "thumb";
 $format			= "png";		// supported formats jpg|png|gif
 $images_dir		= "images";
 $styles_dir		= "styles";
-
-$input_dir		= "images/";
-$output_dir		= "build/";
+$input_dir		= "images";
+$output_dir		= "build";
 
 $files		 	= array();
 $lines 			= array();
@@ -117,15 +116,16 @@ function getRelDirTo($from_dir, $to_dir) {
 /*** Main ***/
 
 	// cli options
-$sopt = "h::s::d::c::f::i::y::";
+$sopt = "s::d::c::f::";
 $lopt  = array(
-	"help::",
 	"sizes::",
 	"dimensions::",
 	"class-name::",
 	"format::",
 	"images-dir::",
 	"styles-dir::",
+	"input-dir::",
+	"output-dir::",
 );
 $opt = getCliOptions($sopt, $lopt);
 		// available options
@@ -133,9 +133,10 @@ $sizes = explode(',', getOption($opt, 'sizes', '!^[\dx,]+$!', $sizes));
 $dimensions = getOption($opt, 'dimensions', '!^[\dx]+$!', $dimensions);
 $class_name = getOption($opt, 'class-name', '!^[\w\-_]+$!', $class_name);
 $format = strtolower(getOption($opt, 'format', '!^(jpg|png|gif)$!i', $format));
-$images_dir = getOption($opt, 'images-dir', '!^.+$!', $images_dir);
-$styles_dir = getOption($opt, 'styles-dir', '!^.+$!', $styles_dir);
-
+foreach (array('images-dir', 'styles-dir', 'input-dir', 'output-dir') as $dir) {
+	$var = str_replace('-', '_', $dir);
+	${$var} = getOption($opt, $dir, '!^.+$!', ${$var});
+}
 		// prepare options
 			// convert single sizes to ..x..
 foreach ($sizes as $key => $size) {
@@ -145,22 +146,28 @@ foreach ($sizes as $key => $size) {
 	}
 }
 			// add trailing slash
-if (strlen($images_dir) > 0) {
-	$images_dir = rtrim($images_dir, '/').'/';
-}
-if (strlen($styles_dir) > 0) {
-	$styles_dir = rtrim($styles_dir, '/').'/';
+foreach (array('images_dir', 'styles_dir', 'input_dir', 'output_dir') as $var) {
+	if (strlen(${$var}) > 0) {
+		${$var} = rtrim(${$var}, '/').'/';
+	}
 }
 
 	// create output dirs
+foreach (array('input_dir', 'output_dir') as $var) {
+	if (!is_dir(${$var})) {
+		
+		exit("ERROR: {${$var}} is not a directory\n");
+	}
+}
 $now = date('ymd-His');
 $output_dir .= "{$now}/";
 $output = shell_exec("mkdir -p {$output_dir}".ltrim($images_dir, '/'));
 $output = shell_exec("mkdir -p {$output_dir}".ltrim($styles_dir, '/'));
 
+	// get rel dir from styles to images for css
 $images_rel_dir = getRelDirTo($styles_dir, $images_dir);
 
-	// load input
+	// load input files
 foreach (glob("{$input_dir}*") as $file) {
 	$files[] = pathinfo($file);
 }
