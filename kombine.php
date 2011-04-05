@@ -117,7 +117,7 @@ function getRelDirTo($from_dir, $to_dir) {
 /*** Main ***/
 
 	// cli options
-$sopt = "h::s::d::c::f::i::j::";
+$sopt = "h::s::d::c::f::i::y::";
 $lopt  = array(
 	"help::",
 	"sizes::",
@@ -206,11 +206,10 @@ foreach ($stripes as $size => $stripe) {
 $lines[] = "";
 foreach ($sizes as $size) {
 	list($size_x, $size_y) = explode('x', $size);
-	$row = $col = 0;
-	$page = 1;
-	$i = 0;
+	$prefix = ($size_x !== $size_y) ? $size : $size_x;
+	$col = $row = $i = $page = 0;
 	foreach ($files as $index => $info) {
-		if ($col > 0 && $col % $columns === 0) {
+		if ($col && ($col % $columns === 0)) {
 			$row++;
 			$col = 0;
 		}
@@ -223,12 +222,14 @@ foreach ($sizes as $size) {
 			$pos_y = "-{$pos_y}px";
 		}
 		$col++;
-		$prefix = ($size_x !== $size_y) ? $size : $size_x;
 		$bg_image = "";
 		if ($pages > 1) {
-			$page = floor($i / $page_size);
 			$bg_image_url = str_replace(".{$format}", "-{$page}.{$format}", $stripes[$size]);
 			$bg_image = "\n\tbackground-image: url({$images_rel_dir}{$bg_image_url});";
+			if ($i && (($i + 1) % $page_size === 0)) {
+				$page++;
+				$col = $row = 0;
+			}
 		}
 		$lines[] = ".{$class_name}.{$class_name}-{$prefix}.{$class_name}-{$info['filename']} {{$bg_image}
 	background-position: {$pos_x} {$pos_y};
