@@ -30,7 +30,7 @@ Usage
     php kombine.php --sizes=30x20 --dimensions=8x2 --format=png --class-name=thumb --images-dir=styles/thumbs \
                     --styles-dir=styles
 
-    php kombine.php -s30x20 -d8x2 -fpng -cthumb -istyles/thumbs -ystyles
+    php kombine.php -s30x20 -d8x2 -fpng -cthumb --images-dir=styles/thumbs --styles-dir=styles
 
     » This will create *30x20px* version of the images combined splitted into *multiple images* with *8 columns* 
       and *2 rows*, *PNG* format and *thumb* as class name in the css. The final images will be located in the 
@@ -46,16 +46,19 @@ Options
     -d | --dimensions   int             .. or ..x..     ?x1*            [columns] x [rows]
     -c | --class-name   string                          thumb
     -f | --format       string          jpg|png|gif     jpg
-    -i | --images-dir   string                          images
-    -y | --styles-dir   string                          styles
+    --images-dir        string                          images/
+    --styles-dir        string                          styles/
+    --input-dir         string                          images/
+    --output-dir        string                          build/..        **
     
     *) ? = total provided images
+    **) a timestamp dir is always automatically added
 </pre>
 
 Requirements
 -
 + [Linux based OS][1]
-+ [PHP][2]
++ [PHP 5.3][2]
 + [ImageMagick][3]
 
 Optimize
@@ -63,7 +66,7 @@ Optimize
 Before using the generated images in production I suggest an optimization tool like [optipng][1] or [jpegoptim][2].
 
 [1]: http://www.ubuntu.com                  "Linux based OS"
-[2]: http://www.php.net                     "PHP"
+[2]: http://www.php.net                     "PHP 5.3"
 [3]: http://www.imagemagick.org             "ImageMagick"
 
 [4]: http://optipng.sourceforge.net         "optipng"
