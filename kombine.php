@@ -128,6 +128,7 @@ $lopt  = array(
 	"styles-dir::",
 );
 $opt = getCliOptions($sopt, $lopt);
+		// available options
 $sizes = explode(',', getOption($opt, 'sizes', '!^[\dx,]+$!', $sizes));
 $dimensions = getOption($opt, 'dimensions', '!^[\dx]+$!', $dimensions);
 $class_name = getOption($opt, 'class-name', '!^[\w\-_]+$!', $class_name);
@@ -244,6 +245,6 @@ $lines[] = "/* /Kombine */";
 file_put_contents("{$output_dir}{$styles_dir}{$class_name}.css", implode("\n", $lines));
 
 	// bye bye
-print "built finished > {$output_dir}\n";
+print "successfully built > {$output_dir}\n";
 
 exit();
