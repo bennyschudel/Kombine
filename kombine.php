@@ -2,15 +2,16 @@
 
 /**
  * This PHP script create sprites and css of given images
- * 
+ *
  * usage: php kombine.php -s16,32,64 -d8x2 -cthumb
  *        php kombine.php --sizes=16x16,32x32,64x64 --dimensions=8x2 --class-name=thumb
- * 
+ *
  * author: Benjamin Schudel <benjamin.schudel at gmail>
  * date: 20011-04-05
  */
 
 $sizes			= "16,32,64";
+$names			= null;
 $dimensions		= "";
 $columns		= 0;
 $rows			= 0;
@@ -21,22 +22,22 @@ $styles_dir		= "styles";
 $input_dir		= "images";
 $output_dir		= "build";
 
-$files		 	= array();
-$lines 			= array();
-$stripes 		= array();
+$files			= array();
+$lines			= array();
+$stripes		= array();
 
 /**
  * Gets command line options in short an long formats and maps given short format to long.
- * 
+ *
  * Example:
- * 
+ *
  *   -s16,32,64                 => array( sizes => 16,32, 64 )
  *   -s16,32,64 --sizes=16,32   => array( sizes => 16,32 )
  *   --sizes=16,32,64           => array( sizes => 16,32,64 )
- * 
- * @param string $sopt 
- * @param array $lopt 
- * 
+ *
+ * @param string $sopt
+ * @param array $lopt
+ *
  * @return array
  */
 function getCliOptions($sopt, $lopt) {
@@ -50,7 +51,7 @@ function getCliOptions($sopt, $lopt) {
 			unset($opt[$value]);
 		}
 	}
-	
+
 	return $opt;
 }
 
@@ -58,44 +59,63 @@ function getCliOptions($sopt, $lopt) {
  * Checks if a given option value is valid. If not throws an error.
  *
  * @param array $opt
- * @param string $name 
- * @param string $reg 
+ * @param string $name
+ * @param string $reg
  * @param value $default
- * 
+ *
  * @return value or exit
  */
 function getOption($opt, $name, $reg, $default = null) {
 	if (isset($opt[$name])) {
 		if (preg_match($reg, @$opt[$name])) {
-			
+
 			return $opt[$name];
 		}
 		else {
-			
+
 			exit("ERROR: Invalid {$name} argument\n");
 		}
 	}
-	
+
 	return $default;
+}
+
+/**
+ * Creates a prefix from dimensions when no name is provided
+ *
+ * @param string $size
+ * @param string $name
+ *
+ * @return string
+ */
+function createPrefix($size, $name = null) {
+	list($size_x, $size_y) = explode('x', $size);
+	if ($name) {
+		$prefix = $name;
+	} else {
+		$prefix = ($size_x !== $size_y) ? $size : $size_x;
+	}
+
+	return $prefix;
 }
 
 /**
  * Returns the to_dir in relative to the from_dir
  *
- * @param string $from_dir 
- * @param string $to_dir 
+ * @param string $from_dir
+ * @param string $to_dir
  *
  * @return string
  */
 function getRelDirTo($from_dir, $to_dir) {
 	if (substr($to_dir, 0, 1) === '/') {
-		
+
 		return $to_dir;
 	}
-	
+
 	$from_dir = explode('/', trim($from_dir, '/'));
 	$to_dir = explode('/', trim($to_dir, '/'));
-	
+
 	$rel = 0;
 	for ($i = 0; $i < count($from_dir); $i++) {
 		if ($from_dir[$i] === @$to_dir[$i]) {
@@ -108,7 +128,7 @@ function getRelDirTo($from_dir, $to_dir) {
 	for ($i = 0; $i < $rel; $i++) {
 		array_unshift($to_dir, '..');
 	}
-	
+
 	return implode('/', $to_dir).'/';
 }
 
@@ -116,9 +136,10 @@ function getRelDirTo($from_dir, $to_dir) {
 /*** Main ***/
 
 	// cli options
-$sopt = "s::d::c::f::";
+$sopt = "s::n::d::c::f::";
 $lopt  = array(
 	"sizes::",
+	"names::",
 	"dimensions::",
 	"class-name::",
 	"format::",
@@ -130,6 +151,7 @@ $lopt  = array(
 $opt = getCliOptions($sopt, $lopt);
 		// available options
 $sizes = explode(',', getOption($opt, 'sizes', '!^[\dx,]+$!', $sizes));
+$names = explode(',', getOption($opt, 'names', '!^[\w\d,]+$!', $names));
 $dimensions = getOption($opt, 'dimensions', '!^[\dx]+$!', $dimensions);
 $class_name = getOption($opt, 'class-name', '!^[\w\-_]+$!', $class_name);
 $format = strtolower(getOption($opt, 'format', '!^(jpg|png|gif)$!i', $format));
@@ -155,7 +177,7 @@ foreach (array('images_dir', 'styles_dir', 'input_dir', 'output_dir') as $var) {
 	// create output dirs
 foreach (array('input_dir', 'output_dir') as $var) {
 	if (!is_dir(${$var})) {
-		
+
 		exit("ERROR: {${$var}} is not a directory\n");
 	}
 }
@@ -187,12 +209,13 @@ $page_size = $columns * $rows;
 $pages = ceil($total / $page_size);
 
 	// create image stripes
+$i = 0;
 foreach ($sizes as $size) {
-	list($size_x, $size_y) = explode('x', $size);
-	$prefix = ($size_x !== $size_y) ? $size : $size_x;
+	$prefix = createPrefix($size, @$names[$i]);
 	$stripe = "{$class_name}-{$prefix}.{$format}";
-	$output = shell_exec("montage {$input_dir}* -tile {$dimensions} -geometry {$size} -quality 90 {$output_dir}{$images_dir}{$stripe}");
+	$output = shell_exec("montage {$input_dir}* -tile {$dimensions} -geometry {$size} -quality 90 -background none {$output_dir}{$images_dir}{$stripe}");
 	$stripes[$size] = $stripe;
+	$i++;
 }
 
 	// create css
@@ -202,27 +225,32 @@ $lines[] = ".{$class_name} {
 	background-repeat: no-repeat;
 }";
 $lines[] = "";
+
+$i = 0;
 foreach ($stripes as $size => $stripe) {
+	$prefix = createPrefix($size, @$names[$i]);
 	list($size_x, $size_y) = explode('x', $size);
-	$prefix = ($size_x !== $size_y) ? $size : $size_x;
 	$bg_image = ($pages == 1) ? "\n\tbackground-image: url({$images_rel_dir}{$stripe});" : "";
 	$lines[] = ".{$class_name}.{$class_name}-{$prefix} {{$bg_image}
 	width: {$size_x}px;
 	height: {$size_y}px;
 }";
+	$i++;
 }
 $lines[] = "";
+
+$i = 0;
 foreach ($sizes as $size) {
+	$prefix = createPrefix($size, @$names[$i]);
 	list($size_x, $size_y) = explode('x', $size);
-	$prefix = ($size_x !== $size_y) ? $size : $size_x;
-	$col = $row = $i = $page = 0;
+	$col = $row = $j = $page = 0;
 	foreach ($files as $index => $info) {
 		if ($col && ($col % $columns === 0)) {
 			$row++;
 			$col = 0;
 		}
 		$pos_x = $col * (int)$size_x;
-		$pos_y = $row * (int)$size_y; 
+		$pos_y = $row * (int)$size_y;
 		if ($pos_x > 0) {
 			$pos_x = "-{$pos_x}px";
 		}
@@ -234,7 +262,7 @@ foreach ($sizes as $size) {
 		if ($pages > 1) {
 			$bg_image_url = str_replace(".{$format}", "-{$page}.{$format}", $stripes[$size]);
 			$bg_image = "\n\tbackground-image: url({$images_rel_dir}{$bg_image_url});";
-			if ($i && (($i + 1) % $page_size === 0)) {
+			if ($j && (($j + 1) % $page_size === 0)) {
 				$page++;
 				$col = $row = 0;
 			}
@@ -242,9 +270,10 @@ foreach ($sizes as $size) {
 		$lines[] = ".{$class_name}.{$class_name}-{$prefix}.{$class_name}-{$info['filename']} {{$bg_image}
 	background-position: {$pos_x} {$pos_y};
 }";
-		$i++;
+		$j++;
 	}
 	$lines[] = "";
+	$i++;
 }
 array_pop($lines);
 $lines[] = "/* /Kombine */";
